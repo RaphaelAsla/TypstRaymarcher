@@ -139,12 +139,7 @@
   let ro = (0.0, 1.0, -0.5)
   let rd = normalize((x, y, 1.0))
   let (p, id, h) = rayMarch(ro, rd)
-  let color = ()
-  if h {
-    color = getLight(p, id)
-  } else {
-    color = SKY_COLOR
-  }
+  let color = if h { getLight(p, id) } else { SKY_COLOR }
   pow3(color, 0.4545)
 }
 
