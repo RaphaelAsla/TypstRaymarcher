@@ -2,8 +2,9 @@
 
 #let SKY_COLOR = (0.5, 0.7, 0.9)
 #let GROUND_COLOR = (0.3, 0.25, 0.2)
-#let CYLINDER_CENTER = (0.0, 1.0, 1.5)
+#let CYLINDER_CENTER = (0.0, 1.0, 2.0)
 #let LIGHT_POSITION = (3.0, 4.0, -1.0)
+#let LIGHT_COLOR = (1.0, 0.9, 0.7)
 
 #let GRID_SIZE = 50 // Start small, because of Typst caching, memory usage skyrockets, I can only go to 140x140 on 100 MAX_STEPS before crashing (image in read me)
 #let MAX_STEPS = 50 // Same goes here
@@ -78,11 +79,11 @@
 
 #let getNormal(p) = {
   let (d, _) = sdMap(p)
-  let e = (0.01, 0.0)
+  let e = 0.01
   let n = (
-    d - sdMap(subVectors(p, (e.at(0), e.at(1), e.at(1)))).at(0),
-    d - sdMap(subVectors(p, (e.at(1), e.at(0), e.at(1)))).at(0),
-    d - sdMap(subVectors(p, (e.at(1), e.at(1), e.at(0)))).at(0),
+    d - sdMap(subVectors(p, (e, 0, 0))).at(0),
+    d - sdMap(subVectors(p, (0, e, 0))).at(0),
+    d - sdMap(subVectors(p, (0, 0, e))).at(0),
   )
   normalize(n)
 }
@@ -126,8 +127,8 @@
   let r = reflect(scaleVector(l, -1.0), n)
   let v = normalize(subVectors((0.0, 0.0, 5.0), p))
   let spec = pow(max(dot(r, v), 0.0), 32.0)
-  let diffuse = mulVectors(scaleVector((1.0, 0.9, 0.7), diff), color)
-  let specular = scaleVector(scaleVector((1.0, 0.9, 0.7), 0.5), spec)
+  let diffuse = mulVectors(scaleVector(LIGHT_COLOR, diff), color)
+  let specular = scaleVector(scaleVector(LIGHT_COLOR, 0.5), spec)
   let ambient = scaleVector(color, 0.5)
   let shadow = softShadow(addVectors(p, scaleVector(n, SURF_DIST * 2.0)), l, 0.02, 5.0, 16.0)
   addVectors(ambient, scaleVector(addVectors(diffuse, specular), shadow))
